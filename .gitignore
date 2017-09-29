@@ -1,0 +1,27 @@
+__pycache__/
+db.sqlite3
+*.pyc
+*.pyo
+env
+env*
+dist
+build
+.cache/
+
+
+## OS ##
+
+# Linux
+*~
+*.swp
+# KDE
+.directory
+
+# Windows
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Mac OS
+.DS_Store*
+._*
