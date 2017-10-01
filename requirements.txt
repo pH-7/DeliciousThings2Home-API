@@ -1,7 +1,9 @@
 Django==1.11.5
 
-Pillow=4.2.1
-gunicorn=19.7.1
+Pillow==4.2.1
+gunicorn==19.7.1
 olefile==0.44
 pytz==2017.2
 whitenoise==3.3.1
+dj-database-url==0.4.2
+psycopg==2.7.3
