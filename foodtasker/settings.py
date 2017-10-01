@@ -129,4 +129,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 dj_database_url.config()
-DATABASE['default'].update(db_from_env)
+DATABASES['default'].update(db_from_env)
