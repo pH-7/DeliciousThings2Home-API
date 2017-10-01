@@ -1,1 +1,1 @@
-web: gunicorn DeliciousThings2Home.wsgi --log-file -
+web: gunicorn foodtasker.wsgi --log-file -
