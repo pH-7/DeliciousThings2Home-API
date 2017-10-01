@@ -6,4 +6,4 @@ olefile==0.44
 pytz==2017.2
 whitenoise==3.3.1
 dj-database-url==0.4.2
-psycopg==2.7.3
+psycopg2==2.7.3
