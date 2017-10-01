@@ -1,3 +1,8 @@
+"""
+Author: Pierre-Henry Soria <hi@ph7.me>
+Copyright: Pierre-Henry Soria, All Rights Reserved.
+"""
+
 from django.db import models
 from django.contrib.auth.models import User
 
