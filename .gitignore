@@ -7,6 +7,7 @@ env*
 dist
 build
 .cache/
+media/restaurant_logo/*
 
 
 ## OS ##
