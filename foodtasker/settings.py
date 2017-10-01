@@ -26,7 +26,7 @@ SECRET_KEY = '31npy-y8hs*vaos28t=z61-&k1woq^%3-aw1oxznq70im0z%=x'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['calm-shelf-98219.herokuapp.com']
 
 
 # Application definition
