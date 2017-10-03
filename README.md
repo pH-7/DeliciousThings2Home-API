@@ -1,10 +1,11 @@
 # Food Delivery App (Backend + Frontend Swift App)
 
 
-## Requirements
+## How It's Cooked?
 
 * Python 3.6 or higher.
 * Django 1.11
+* Bootstrap 3.*
 
 
 ## Inspired By ... The BEST!
