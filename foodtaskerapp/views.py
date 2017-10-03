@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from foodtaskerapp.forms import UserForm, RestaurantForm
+
+from foodtaskerapp.forms import UserForm, RestaurantForm, UserEditForm, MealForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 
@@ -13,11 +14,46 @@ def restaurant_home(request):
 
 @login_required(login_url='/restaurant/sign-in/')
 def restaurant_account(request):
-    return render(request, 'restaurant/account.html', {})
+    user_form = UserEditForm(instance = request.user)
+    restaurant_form = RestaurantForm(instance = request.user.restaurant)
+
+    if request.user.restaurant.logo:
+        restaurant_form.fields['logo'].required = False
+
+    if request.method == 'POST':
+        # Update the data
+        user_form = UserEditForm(request.POST, instance = request.user)
+        restaurant_form = RestaurantForm(request.POST, request.FILES, instance = request.user.restaurant)
+
+        if user_form.is_valid() and restaurant_form.is_valid():
+            user_form.save()
+            restaurant_form.save()
+
+    return render(request, 'restaurant/account.html', {
+        'user_form': user_form,
+        'restaurant_form': restaurant_form
+    })
 
 @login_required(login_url='/restaurant/sign-in/')
 def restaurant_meal(request):
     return render(request, 'restaurant/meal.html', {})
+
+@login_required(login_url='/restaurant/sign-in/')
+def restaurant_add_meal(request):
+    meal_form = MealForm()
+
+    if request.method == 'POST':
+        meal_form = MealForm(request.POST, request.FILES)
+
+        if meal_form.is_valid():
+            meal = meal_form.save(commit=False)
+            meal.restaurant = request.user.restaurant
+            meal.save()
+            return redirect(restaurant_meal)
+
+    return render(request, 'restaurant/add-meal.html', {
+        'meal_form': meal_form
+    })
 
 @login_required(login_url='/restaurant/sign-in/')
 def restaurant_order(request):

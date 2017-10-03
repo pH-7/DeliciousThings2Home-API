@@ -7,15 +7,14 @@
         <div class="panel">
             <div class="panel-heading bg-blue">
                 <h4 class="panel-titlle-center text-white">
-                    Account
+                    Add Meal
                 </h4>
             </div>
             <div class="panel-body">
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    {% bootstrap_form user_form %}
-                    {% bootstrap_form restaurant_form %}
-                    <button type="submit" class="btn btn-pink">Update</button>
+                    {% bootstrap_form meal_form %}
+                    <button type="submit" class="btn btn-pink">Create</button>
                 </form>
             </div>
         </div>

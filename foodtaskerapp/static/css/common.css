@@ -1,5 +1,5 @@
 body {
-    padding-top: 50%;
+    margin-top: 10vh;
     background-color: #edf2f5;
     overflow: auto;
 }
@@ -105,4 +105,8 @@ body {
 /** Content **/
 .content {
     padding: 0 40px;
+}
+
+.content .panel {
+    border: none;
 }
