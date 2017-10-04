@@ -4,6 +4,7 @@ Copyright: Pierre-Henry Soria, All Rights Reserved.
 """
 
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import User
 
 class Restaurant(models.Model):
@@ -43,3 +44,37 @@ class Meal(models.Model):
 
     def __str__(self):
         return self.name
+
+class Order(models.Model):
+    COOKING = 1
+    READY = 2
+    ONTHEWAY = 3
+    DELIVERED = 4
+
+    STATUS_CHOICES = (
+        (COOKING, 'Cooking'),
+        (READY, 'Ready'),
+        (READY, 'On the way'),
+        (READY, 'Delivered'),
+    )
+
+    customer = models.ForeignKey(Customer)
+    restaurant = models.ForeignKey(Restaurant)
+    driver = models.ForeignKey(Driver)
+    address = models.CharField(max_length=120)
+    total = models.IntegerField()
+    status = models.IntegerField(choices = STATUS_CHOICES)
+    created_at = models.DateTimeField(default = timezone.now())
+    picked_at = models.DateTimeField(blank = True, null = True)
+
+    def __str__(self):
+        return str(self.id)
+
+class OrderDetails(models.Model):
+    order = models.ForeignKey(Order, related_name='order_details')
+    meal = models.ForeignKey(Meal)
+    quantity = models.IntegerField
+    sub_total = models.IntegerField()
+
+    def __str__(self):
+        return str(self.id)
