@@ -80,7 +80,7 @@ body {
     padding-left: 60px;
     padding-right: 30px;
 }
-.sidebar .list-group .list-group-item:active,
+.sidebar .list-group .list-group-item.active,
 .sidebar .list-group .list-group-item:hover {
     background-color: #383957;
     color: #e0deeb;
@@ -92,7 +92,7 @@ body {
 }
 
 .sidebar .list-group .list-group-item .badge,
-.sidebar .list-group .list-group-item:active .badge {
+.sidebar .list-group .list-group-item.active .badge {
     background-color: #ee5462;
     color: #e0deeb;
 }
