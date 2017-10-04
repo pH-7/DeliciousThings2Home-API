@@ -6,6 +6,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
     logo = serializers.SerializerMethodField()
 
     def get_logo(self, restaurant):
+        """Get the absolute URL for the logo image"""
         request = self.context.get('request')
         logo_url = restaurant.logo.url
 
