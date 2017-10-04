@@ -38,5 +38,9 @@ urlpatterns = [
     # /revoke-token (fir sign out)
     url(r'^api/social/', include('rest_framework_social_oauth2.urls')),
 
+    # APIs for Customers
     url(r'^api/customer/restaurants/$', api.customer_get_restaurants),
+    url(r'^api/customer/meals/(?P<restaurant_id>\d+)/$', api.customer_get_meals),
+    url(r'^api/customer/order/add/$', api.customer_add_order),
+    url(r'^api/customer/order/latest/$', api.customer_get_latest_order),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
