@@ -73,7 +73,7 @@ class Order(models.Model):
 class OrderDetails(models.Model):
     order = models.ForeignKey(Order, related_name='order_details')
     meal = models.ForeignKey(Meal)
-    quantity = models.IntegerField
+    quantity = models.IntegerField()
     sub_total = models.IntegerField()
 
     def __str__(self):
