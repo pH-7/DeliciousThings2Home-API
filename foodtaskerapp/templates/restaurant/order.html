@@ -1,4 +1,58 @@
 {% extends 'restaurant/base.html' %}
 
 {% block page %}
+    <div class="panel">
+        <div class="panel-heading bg-blue">
+            <h4 class="panel-title text-center text-white">
+                Orders
+            </h4>
+        </div>
+
+        <div class="panel-body">
+            <table class="table table-bordered table-hover table-striped">
+                <thead>
+                    <tr class="bg-gray text-white">
+                        <th>ID#</th>
+                        <th>Order Details</th>
+                        <th>Customer</th>
+                        <th>Driver</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        {% if order.status == 1 %}
+                            <th>Action</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ order.id }}</td>
+                            <td>
+                                 {% for order_details in order.order_details.all %}
+                                    {{ order_details.meal.name }}
+                                    {{ order_details.meal.price }}
+                                    x {{ order_details.quantity }}
+                                    = ${{ order_details.sub_total }}
+                                {% endfor %}
+                            </td>
+                            <td>{{ order.customer }}</td>
+                            <td>{{ order.driver }}</td>
+                            <td>{{ order.total }}</td>
+                            <td>{{ order.get_status_display }}</td>
+                            {% if order.status == 1 %}
+                                <td>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="id" value="{{ order.id }}">
+                                        <button class="btn btn-success">Ready</button>
+                                    </form>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock %}
