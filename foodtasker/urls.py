@@ -43,4 +43,5 @@ urlpatterns = [
     url(r'^api/customer/meals/(?P<restaurant_id>\d+)/$', api.customer_get_meals),
     url(r'^api/customer/order/add/$', api.customer_add_order),
     url(r'^api/customer/order/latest/$', api.customer_get_latest_order),
+    url(r'^api/restaurant/order/notification/(?P<last_request_time>.+)/$', api.restaurant_order_notification),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
