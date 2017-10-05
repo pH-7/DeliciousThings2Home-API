@@ -6,7 +6,7 @@
 {% block script %}
     <script>
         $(function() {
-            var now = new Date();
+            var now = new Date(), pageTitle = document.title;
             setInterval(function() {
                 $.ajax({
                     url: '/api/restaurant/order/notification/' + now.toISOString() + '/',
@@ -15,6 +15,7 @@
                         if (data['notification'] === 0) {
                             $('.badge').text(''); // Clear the text
                         } else {
+                            document.title = '(' + data['notification'] +') ' + pageTitle;
                             $('.badge').text(data['notification']);
                         }
                     }
