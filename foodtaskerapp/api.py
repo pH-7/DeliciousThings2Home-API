@@ -4,7 +4,7 @@ from django.utils import timezone
 from oauth2_provider.models import AccessToken
 
 from foodtaskerapp.models import Restaurant, Meal, Order, OrderDetails
-from foodtaskerapp.serializer import RestaurantSerializer, MealSerializer
+from foodtaskerapp.serializer import RestaurantSerializer, MealSerializer, OrderSerializer
 
 import json
 
@@ -89,7 +89,15 @@ def customer_add_order(request):
             return JsonResponse({"status": "success"})
 
 def customer_get_latest_order(request):
-    return JsonResponse({})
+    access_token = AccessToken.objects.get(
+        token = request.GET.get('access_token'),
+        expires__gt = timezone.now()
+    )
+
+    customer = access_token.user.customer
+    order = OrderSerializer(Order.objects.filter(customer = customer).last()).data
+
+    return JsonResponse({"order": order})
 
 def restaurant_order_notification(request, last_request_time):
     notification = Order.objects.filter(
