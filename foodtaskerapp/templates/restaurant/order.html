@@ -18,9 +18,7 @@
                         <th>Driver</th>
                         <th>Total</th>
                         <th>Status</th>
-                        {% if order.status == 1 %}
-                            <th>Action</th>
-                        {% endif %}
+                        <th>Action</th>
                     </tr>
                 </thead>
 
@@ -40,15 +38,15 @@
                             <td>{{ order.driver }}</td>
                             <td>{{ order.total }}</td>
                             <td>{{ order.get_status_display }}</td>
-                            {% if order.status == 1 %}
-                                <td>
+                            <td>
+                                {% if order.status == 1 %}
                                     <form method="post">
                                         {% csrf_token %}
                                         <input type="hidden" name="id" value="{{ order.id }}">
                                         <button class="btn btn-success">Ready</button>
                                     </form>
-                                </td>
-                            {% endif %}
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
