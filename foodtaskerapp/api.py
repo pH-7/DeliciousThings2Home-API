@@ -55,11 +55,11 @@ def customer_add_order(request):
             return JsonResponse({"status": "failed", "error": "The address is required."})
 
         # Get the order details in JSON format
-        order_details = json.loads(request.POST['order_details'])
+        order_details = json.loads(request.POST.get('order_details'))
 
         order_total = 0
         for meal in order_details:
-            if not Meal.objects.filter(id = meal['meal_id'], restaurant_id = request.POST['restaurant_id']):
+            if not Meal.objects.filter(id = meal['meal_id'], restaurant_id = request.POST.get('restaurant_id')):
                 return JsonResponse({"status": "failed", "error": "Meals must be in only one specific restaurant."})
             else:
                 order_total += Meal.objects.get(id = meal['meal_id']).price * meal['quantity']
@@ -68,10 +68,10 @@ def customer_add_order(request):
             # Firstly, create an Order
             order = Order.objects.create(
                 customer = customer,
-                restaurant_id = request.POST['restaurant_id'],
+                restaurant_id = request.POST.get('restaurant_id'),
                 total = order_total,
                 status = Order.COOKING,
-                address = request.POST['address']
+                address = request.POST.get('address')
             )
 
             # THen, create an Order Details
@@ -111,17 +111,17 @@ def driver_get_ready_orders(request):
 
 @csrf_exempt
 def driver_pick_order(request):
-    if request.method == 'POST' and request.POST['order_id']:
+    if request.method == 'POST' and request.POST.get('order_id'):
         access_token = get_access_token(request, method = 'POST')
 
         driver = access_token.user.driver
 
         if Order.objects.filter(driver = driver).exclude(status = Order.ONTHEWAY):
-            return JsonResponse({"status": "failed", "error": "You can only picj one order at the same time."})
+            return JsonResponse({"status": "failed", "error": "You can only pick one order at the same time."})
 
         try:
             order = Order.objects.get(
-                id = request.POST['order_id'],
+                id = request.POST.get('order_id'),
                 driver = None,
                 status = Order.READY
             )
