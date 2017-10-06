@@ -1,13 +1,17 @@
+"""
+Author: Pierre-Henry Soria <hi@ph7.me>
+Copyright: Pierre-Henry Soria, All Rights Reserved.
+"""
+
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from oauth2_provider.models import AccessToken
 from datetime import timedelta
+import json
 
 from foodtaskerapp.models import Restaurant, Meal, Order, OrderDetails
 from foodtaskerapp.serializer import RestaurantSerializer, MealSerializer, OrderSerializer
-
-import json
 
 def customer_get_restaurants(request):
     restaurants = RestaurantSerializer(
@@ -58,33 +62,37 @@ def customer_add_order(request):
         # Get the order details in JSON format
         order_details = json.loads(request.POST.get('order_details'))
 
-        order_total = 0
-        for meal in order_details:
-            if not Meal.objects.filter(id = meal['meal_id'], restaurant_id = request.POST.get('restaurant_id')):
-                return JsonResponse({"status": "failed", "error": "Meals must be in only one specific restaurant."})
-            else:
-                order_total += Meal.objects.get(id = meal['meal_id']).price * meal['quantity']
-
-        if len(order_details) > 0:
-            # Firstly, create an Order
-            order = Order.objects.create(
-                customer = customer,
-                restaurant_id = request.POST.get('restaurant_id'),
-                total = order_total,
-                status = Order.COOKING,
-                address = request.POST.get('address')
-            )
-
-            # THen, create an Order Details
+        try:
+            total_order = 0 # Default total orders value
             for meal in order_details:
-                OrderDetails.objects.create(
-                    order = order,
-                    meal_id = meal['meal_id'],
-                    quantity = meal['quantity'],
-                    sub_total = Meal.objects.get(id = meal['meal_id']).price * meal['quantity']
+                if not Meal.objects.filter(id = meal['meal_id'], restaurant_id = request.POST.get('restaurant_id')):
+                    return JsonResponse({"status": "failed", "error": "Meals must be in only one specific restaurant."})
+                else:
+                    total_order += Meal.objects.get(id = meal['meal_id']).price * meal['quantity']
+
+            if len(order_details) > 0:
+                # Firstly, create an Order
+                order = Order.objects.create(
+                    customer = customer,
+                    restaurant_id = request.POST.get('restaurant_id'),
+                    total = total_order,
+                    status = Order.COOKING,
+                    address = request.POST.get('address')
                 )
 
-            return JsonResponse({"status": "success"})
+                # THen, create an Order Details
+                for meal in order_details:
+                    OrderDetails.objects.create(
+                        order = order,
+                        meal_id = meal['meal_id'],
+                        quantity = meal['quantity'],
+                        sub_total = Meal.objects.get(id = meal['meal_id']).price * meal['quantity']
+                    )
+
+                return JsonResponse({"status": "success"})
+        except Meal.DoesNotExist:
+            return JsonResponse({"status": "failed", "error": "The specified meal doesn't exist."})
+
 
 def customer_get_latest_order(request):
     access_token = get_access_token(request, method = 'GET')
@@ -133,7 +141,7 @@ def driver_pick_order(request):
 
             return JsonResponse({"status": "success"})
         except Order.DoesNotExist:
-            return JsonResponse({"status": "failed", "error": "This order has been picked up."})
+            return JsonResponse({"status": "failed", "error": "This order has been already picked up."})
 
 def driver_get_latest_order(request):
     access_token = get_access_token(request, method = 'GET')
