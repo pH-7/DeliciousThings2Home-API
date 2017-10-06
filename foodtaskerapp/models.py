@@ -54,8 +54,8 @@ class Order(models.Model):
     STATUS_CHOICES = (
         (COOKING, 'Cooking'),
         (READY, 'Ready'),
-        (READY, 'On the way'),
-        (READY, 'Delivered'),
+        (ONTHEWAY, 'On the way'),
+        (DELIVERED, 'Delivered'),
     )
 
     customer = models.ForeignKey(Customer)
