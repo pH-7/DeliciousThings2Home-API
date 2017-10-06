@@ -194,3 +194,6 @@ def get_access_token(request, method = 'POST'):
     )
 
     return access_token
+
+def get_current_weekdays():
+    return [today + timedelta(days = i) for i in range(0 - today.weekday(), 7 - today.weekday())]
