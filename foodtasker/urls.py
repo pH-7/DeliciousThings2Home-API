@@ -44,4 +44,11 @@ urlpatterns = [
     url(r'^api/customer/order/add/$', api.customer_add_order),
     url(r'^api/customer/order/latest/$', api.customer_get_latest_order),
     url(r'^api/restaurant/order/notification/(?P<last_request_time>.+)/$', api.restaurant_order_notification),
+
+    # Driver APIs
+    url(r'^api/driver/orders/ready/$', api.driver_get_ready_orders),
+    url(r'^api/driver/order/pick/$', api.driver_pick_order),
+    url(r'^api/driver/orders/latest/$', api.driver_get_latest_order),
+    url(r'^api/driver/orders/complete/$', api.driver_complete_order),
+    url(r'^api/driver/revenue/$', api.driver_get_revenue),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
