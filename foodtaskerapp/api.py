@@ -169,7 +169,6 @@ def driver_get_revenue(request):
     driver = access_token.user.driver
 
     revenue = {} # dictionary data
-    today = timezone.now()
     current_weekdays = get_current_weekdays()
 
     for day in current_weekdays:
@@ -181,13 +180,14 @@ def driver_get_revenue(request):
             created_at__day = day.day
         )
 
-        revenie[day.strftime("%a")] = sum(order.total for order in orders)
+        revenue[day.strftime("%a")] = sum(order.total for order in orders)
 
     return JsonResponse({"revenue": revenue})
 
 def get_access_token(request, method = 'POST'):
     request_name = 'access_token'
     token = request.GET.get(request_name) if method is 'GET' else request.POST.get(request_name)
+
     access_token = AccessToken.objects.get(
         token = token,
         expires__gt = timezone.now() # Token of the day only
@@ -196,4 +196,6 @@ def get_access_token(request, method = 'POST'):
     return access_token
 
 def get_current_weekdays():
+    today = timezone.now()
+
     return [today + timedelta(days = i) for i in range(0 - today.weekday(), 7 - today.weekday())]
