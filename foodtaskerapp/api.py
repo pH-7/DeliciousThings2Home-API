@@ -134,8 +134,6 @@ def driver_pick_order(request):
         except Order.DoesNotExist:
             return JsonResponse({"status": "failed", "error": "This order has been picked up."})
 
-    return JsonResponse({})
-
 def driver_get_latest_order(request):
     access_token = get_access_token(request, method = 'GET')
 
