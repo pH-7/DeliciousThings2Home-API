@@ -42,16 +42,13 @@ def customer_add_order(request):
     """
 
     if request.method == "POST":
-        access_token = AccessToken.objects.get(
-            token = request.POST.get('access_token'),
-            expires__gt = timezone.now() # Token of the day only
-        )
+        access_token = get_access_token(request)
 
         # Get the profile
         customer = access_token.user.customer
 
         if Order.objects.filter(customer = customer).exclude(status = Order.DELIVERED):
-            return JsonResponse({"status": 'fail', "error": "Your last order must be completed first."})
+            return JsonResponse({"status": 'failed', "error": "Your last order must be completed first."})
 
         # Check the address
         if not request.POST['address']:
@@ -63,7 +60,7 @@ def customer_add_order(request):
         order_total = 0
         for meal in order_details:
             if not Meal.objects.filter(id = meal['meal_id'], restaurant_id = request.POST['restaurant_id']):
-                return JsonResponse({"status": "fail", "error": "Meals must be in only one specific restaurant."})
+                return JsonResponse({"status": "failed", "error": "Meals must be in only one specific restaurant."})
             else:
                 order_total += Meal.objects.get(id = meal['meal_id']).price * meal['quantity']
 
@@ -106,3 +103,55 @@ def restaurant_order_notification(request, last_request_time):
     ).count()
 
     return JsonResponse({"notification": notification})
+
+def driver_get_ready_orders(request):
+    orders = OrderSerializer(
+        Order.objects.filter(status = Order.READY, driver = None).order_by('-id'),
+        many = True
+    ).data
+
+    return JsonResponse({'orders': orders})
+
+@csrf_exempt
+def driver_pick_order(request):
+    if request.method == 'POST' and request.POST['order_id']:
+        access_token = get_access_token(request)
+
+        driver = access_token.user.driver
+
+        if Order.objects.filter(driver = driver).exclude(status = Order.ONTHEWAY):
+            return JsonResponse({"status": "failed", "error": "You can only picj one order at the same time."})
+
+        try:
+            order = Order.objects.get(
+                id = request.POST['order_id'],
+                driver = None,
+                status = Order.READY
+            )
+            order.driver = driver
+            order.status = Order.ONTHEWAY
+            order.picked_at = timezone.now()
+            order.save()
+
+            return JsonResponse({"status": "success"})
+        except Order.DoesNotExist:
+            return JsonResponse({"status": "failed", "error": "This order has been picked up."})
+
+    return JsonResponse({})
+
+def driver_get_latest_order(request):
+    return JsonResponse({})
+
+def driver_complete_order(request):
+    return JsonResponse({})
+
+def driver_get_revenue(request):
+    return JsonResponse({})
+
+def get_access_token(request):
+    access_token = AccessToken.objects.get(
+        token = request.POST.get('access_token'),
+        expires__gt = timezone.now() # Token of the day only
+    )
+
+    return access_token
