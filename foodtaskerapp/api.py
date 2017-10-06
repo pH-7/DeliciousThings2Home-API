@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from oauth2_provider.models import AccessToken
+from datetime import timedelta
 
 from foodtaskerapp.models import Restaurant, Meal, Order, OrderDetails
 from foodtaskerapp.serializer import RestaurantSerializer, MealSerializer, OrderSerializer
@@ -163,7 +164,26 @@ def driver_complete_order(request):
         return JsonResponse({"status": "failed", "error": "This order doesn't exist anymore."})
 
 def driver_get_revenue(request):
-    return JsonResponse({})
+    access_token = get_access_token(request, method = 'GET')
+
+    driver = access_token.user.driver
+
+    revenue = {} # dictionary data
+    today = timezone.now()
+    current_weekdays = get_current_weekdays()
+
+    for day in current_weekdays:
+        orders = Order.objects.filter(
+            driver = driver,
+            status = Order.DELIVERED,
+            created_at__year = day.year,
+            created_at__month = day.month,
+            created_at__day = day.day
+        )
+
+        revenie[day.strftime("%a")] = sum(order.total for order in orders)
+
+    return JsonResponse({"revenue": revenue})
 
 def get_access_token(request, method = 'POST'):
     request_name = 'access_token'
