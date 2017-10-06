@@ -146,8 +146,23 @@ def driver_get_latest_order(request):
 
     return JsonResponse({'order': order})
 
+@csrf_exempt
 def driver_complete_order(request):
-    return JsonResponse({})
+    access_token = get_access_token(request, method = 'POST')
+
+    driver = access_token.user.driver
+
+    try:
+        order = Order.objects.get(id = request.POST.get('order_id'), driver = driver)
+
+        # Change the order status
+        order.status = Order.DELIVERED
+        # Then, save it!
+        order.save()
+
+        return JsonResponse({"status": "success"})
+    except Order.DoesNotExist:
+        return JsonResponse({"status": "failed", "error": "This order doesn't exist anymore."})
 
 def driver_get_revenue(request):
     return JsonResponse({})
