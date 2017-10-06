@@ -42,7 +42,7 @@ def customer_add_order(request):
     """
 
     if request.method == "POST":
-        access_token = get_access_token(request)
+        access_token = get_access_token(request, method = 'POST')
 
         # Get the profile
         customer = access_token.user.customer
@@ -86,10 +86,7 @@ def customer_add_order(request):
             return JsonResponse({"status": "success"})
 
 def customer_get_latest_order(request):
-    access_token = AccessToken.objects.get(
-        token = request.GET.get('access_token'),
-        expires__gt = timezone.now()
-    )
+    access_token = get_access_token(request, method = 'GET')
 
     customer = access_token.user.customer
     order = OrderSerializer(Order.objects.filter(customer = customer).last()).data
@@ -115,7 +112,7 @@ def driver_get_ready_orders(request):
 @csrf_exempt
 def driver_pick_order(request):
     if request.method == 'POST' and request.POST['order_id']:
-        access_token = get_access_token(request)
+        access_token = get_access_token(request, method = 'POST')
 
         driver = access_token.user.driver
 
@@ -148,9 +145,11 @@ def driver_complete_order(request):
 def driver_get_revenue(request):
     return JsonResponse({})
 
-def get_access_token(request):
+def get_access_token(request, method = 'POST'):
+    request_name = 'access_token'
+    token = request.GET.get(request_name) if method is 'GET' else request.POST.get(request_name)
     access_token = AccessToken.objects.get(
-        token = request.POST.get('access_token'),
+        token = token,
         expires__gt = timezone.now() # Token of the day only
     )
 
