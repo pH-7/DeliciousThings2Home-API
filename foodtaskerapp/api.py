@@ -10,7 +10,7 @@ from oauth2_provider.models import AccessToken
 from datetime import timedelta
 import json
 
-from foodtaskerapp.models import Restaurant, Meal, Order, OrderDetails
+from foodtaskerapp.models import Restaurant, Meal, Order, OrderDetails, Driver
 from foodtaskerapp.serializer import RestaurantSerializer, MealSerializer, OrderSerializer
 
 def customer_get_restaurants(request):
@@ -116,7 +116,7 @@ def driver_get_ready_orders(request):
         many = True
     ).data
 
-    return JsonResponse({'orders': orders})
+    return JsonResponse({"orders": orders})
 
 @csrf_exempt
 def driver_pick_order(request):
@@ -151,7 +151,7 @@ def driver_get_latest_order(request):
         Order.objects.filter(driver = driver ).order_by('picked_at').last()
     ).data
 
-    return JsonResponse({'order': order})
+    return JsonResponse({"order": order})
 
 @csrf_exempt
 def driver_complete_order(request):
