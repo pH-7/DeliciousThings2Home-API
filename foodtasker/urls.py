@@ -44,7 +44,7 @@ urlpatterns = [
     url(r'^api/customer/order/add/$', api.customer_add_order),
     url(r'^api/customer/order/latest/$', api.customer_get_latest_order),
     url(r'^api/restaurant/order/notification/(?P<last_request_time>.+)/$', api.restaurant_order_notification),
-    url(r'^api/restaurant/driver/location/$', api.customer_driver_location),
+    url(r'^api/customer/driver/location/$', api.customer_driver_location),
 
     # Driver APIs
     url(r'^api/driver/orders/ready/$', api.driver_get_ready_orders),
