@@ -52,5 +52,5 @@ urlpatterns = [
     url(r'^api/driver/orders/latest/$', api.driver_get_latest_order),
     url(r'^api/driver/orders/complete/$', api.driver_complete_order),
     url(r'^api/driver/revenue/$', api.driver_get_revenue),
-    url(r'^api/driver/location/update/$', api.driver_update),
+    url(r'^api/driver/location/update/$', api.driver_update_location),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
