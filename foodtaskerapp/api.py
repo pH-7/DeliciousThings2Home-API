@@ -12,6 +12,7 @@ import json
 
 from foodtaskerapp.models import Restaurant, Meal, Order, OrderDetails, Driver
 from foodtaskerapp.serializer import RestaurantSerializer, MealSerializer, OrderSerializer
+from foodtaskerapp.util import get_current_weekdays
 
 def customer_get_restaurants(request):
     restaurants = RestaurantSerializer(
@@ -230,8 +231,3 @@ def get_access_token(request, method = 'POST'):
     )
 
     return access_token
-
-def get_current_weekdays():
-    today = timezone.now()
-
-    return [today + timedelta(days = i) for i in range(0 - today.weekday(), 7 - today.weekday())]

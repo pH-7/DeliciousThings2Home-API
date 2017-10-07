@@ -2,9 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from datetime import datetime, timedelta
 
 from foodtaskerapp.models import Meal, Order
 from foodtaskerapp.forms import UserForm, RestaurantForm, UserEditForm, MealForm
+from foodtaskerapp.util import get_current_weekdays
 
 def home(request):
     return redirect(restaurant_home)
@@ -90,7 +92,28 @@ def restaurant_order(request):
 
 @login_required(login_url='/restaurant/sign-in/')
 def restaurant_report(request):
-    return render(request, 'restaurant/report.html', {})
+    """ Calculate revenue and number of order by current week"""
+
+    revenue = []
+    orders = []
+
+    current_weekdays = get_current_weekdays()
+
+    for day in current_weekdays:
+        delivered_orders = Order.objects.filter(
+            restaurant = request.user.restaurant,
+            status = Order.DELIVERED,
+            created_at__year = day.year,
+            created_at__month = day.month,
+            created_at__day = day.day
+        )
+        revenue.append(sum(order.total for order in delivered_orders))
+        orders.append(delivered_orders.count())
+
+    return render(request, 'restaurant/report.html', {
+        "revenue": revenue,
+        "orders": orders
+    })
 
 def restaurant_sign_up(request):
     user_form = UserForm()
