@@ -192,6 +192,34 @@ def driver_get_revenue(request):
 
     return JsonResponse({"revenue": revenue})
 
+@csrf_exempt
+def driver_update_location(request):
+    if request.method == "POST":
+        access_token = get_access_token(request, method = 'POST')
+
+        driver = access_token.user.driver
+
+        # Update the location into DB
+        driver.location = request.POST.get('location')
+        driver.save()
+
+        return JsonResponse({"status": "success"})
+
+def customer_driver_location(request):
+    access_token = get_access_token(request, method = 'GET')
+
+    customer = access_token.user.customer
+
+    # Get the driver location frpm this customer's current order
+    current_order = Order.objects.filter(
+        customer = customer,
+        status = Order.ONTHEWAY
+    ).last()
+
+    location = current_order.driver.location
+
+    return JsonResponse({"location": location})
+
 def get_access_token(request, method = 'POST'):
     request_name = 'access_token'
     token = request.GET.get(request_name) if method is 'GET' else request.POST.get(request_name)
