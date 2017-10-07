@@ -7,7 +7,6 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from oauth2_provider.models import AccessToken
-from datetime import timedelta
 import json
 
 from foodtaskerapp.models import Restaurant, Meal, Order, OrderDetails, Driver
