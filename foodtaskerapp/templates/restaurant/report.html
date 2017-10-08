@@ -3,6 +3,7 @@
 {% block script %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.js"></script>
     <script>
+        /** Revenue Chart **/
         var revenueChart = document.getElementById('revenue-chart').getContext('2d');
         var data = {
             labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -36,6 +37,46 @@
             type: 'bar',
             data: data
         });
+
+        /** Top Meals Chart **/
+        var mealChart = document.getElementById('meal-chart').getContext('2d');
+        var data = {
+            labels: {{ meals.labels|safe }},
+            datasets: [
+                {
+                    backgroundColor: [
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#FF6384'
+                    ],
+                    data: {{ meals.data }}
+                }
+            ]
+        };
+        new Chart(mealChart, {
+            type: 'pie',
+            data: data
+        });
+
+        /** Top Drivers Chart **/
+        var driverChart = document.getElementById('driver-chart').getContext('2d');
+        var data = {
+            labels: {{ drivers.labels|safe }},
+            datasets: [
+                {
+                    backgroundColor: [
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#FF6384'
+                    ],
+                    data: {{ drivers.data }}
+                }
+            ]
+        };
+        new Chart(driverChart, {
+            type: 'pie',
+            data: data
+        });
     </script>
 {% endblock %}
 
@@ -61,6 +102,30 @@
                 </div>
                 <div class="panel-body">
                     <canvas id="order-chart" height="110"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="panel">
+                <div class="panel-heading bg-blue">
+                    <h4 class="panel-title text-center text-white">
+                        Top Meals
+                    </h4>
+                </div>
+                <div class="panel-body">
+                    <canvas id="meal-chart" height="200"></canvas>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading bg-blue">
+                    <h4 class="panel-title text-center text-white">
+                        Top Drivers
+                    </h4>
+                </div>
+                <div class="panel-body">
+                    <canvas id="driver-chart" height="200"></canvas>
                 </div>
             </div>
         </div>

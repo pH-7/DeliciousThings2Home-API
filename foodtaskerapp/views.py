@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from django.db.models import Sum, Count, Case, When
 
-from foodtaskerapp.models import Meal, Order
+from foodtaskerapp.models import Meal, Order, Driver
 from foodtaskerapp.forms import UserForm, RestaurantForm, UserEditForm, MealForm
 from foodtaskerapp.util import get_current_weekdays
 
@@ -109,9 +110,33 @@ def restaurant_report(request):
         revenue.append(sum(order.total for order in delivered_orders))
         orders.append(delivered_orders.count())
 
+    top_meals = Meal.objects.filter(restaurant = request.user.restaurant)\
+        .annotate(total_order = Sum('orderdetails__quantity'))\
+        .order_by('total_order')[:3]
+
+    meals = {
+        "labels": [meal.name for meal in top_meals],
+        "data": [meal.total_order or 0 for meal in top_meals]
+    }
+
+    top_drivers = Driver.objects.annotate(
+        total_order = Count(
+            Case (
+                When(order__restaurant = request.user.restaurant, then = 1)
+            )
+        )
+    ).order_by('-total_order')[:3]
+
+    drivers = {
+        "labels": [driver.user.get_full_name() for driver in top_drivers],
+        "data": [driver.total_order for driver in top_drivers]
+    }
+
     return render(request, 'restaurant/report.html', {
         "revenue": revenue,
-        "orders": orders
+        "orders": orders,
+        "meals": meals,
+        "drivers": drivers
     })
 
 def restaurant_sign_up(request):
