@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from oauth2_provider.models import AccessToken
 import json
+import stripe
 
 from foodtaskerapp.models import Restaurant, Meal, Order, OrderDetails, Driver
 from foodtaskerapp.serializer import RestaurantSerializer, MealSerializer, OrderSerializer
@@ -71,25 +72,40 @@ def customer_add_order(request):
                     total_order += Meal.objects.get(id = meal['meal_id']).price * meal['quantity']
 
             if len(order_details) > 0:
-                # Firstly, create an Order
-                order = Order.objects.create(
-                    customer = customer,
-                    restaurant_id = request.POST.get('restaurant_id'),
-                    total = total_order,
-                    status = Order.COOKING,
-                    address = request.POST.get('address')
+
+                # Firstly, charge customers $$$
+                set_stripe_key()
+
+                charge = stripe.Charge.create(
+                    # Times by 100 because the amount is in cents
+                    amount = total_order * 100,
+                    currency = "eur",
+                    source = get_stripe_token(request),
+                    description = "FoodTasker Order"
                 )
 
-                # THen, create an Order Details
-                for meal in order_details:
-                    OrderDetails.objects.create(
-                        order = order,
-                        meal_id = meal['meal_id'],
-                        quantity = meal['quantity'],
-                        sub_total = Meal.objects.get(id = meal['meal_id']).price * meal['quantity']
+                if charge.status != "failed":
+                    # Secondly, create an Order
+                    order = Order.objects.create(
+                        customer = customer,
+                        restaurant_id = request.POST.get('restaurant_id'),
+                        total = total_order,
+                        status = Order.COOKING,
+                        address = request.POST.get('address')
                     )
 
-                return JsonResponse({"status": "success"})
+                    # THen, create an Order Details
+                    for meal in order_details:
+                        OrderDetails.objects.create(
+                            order = order,
+                            meal_id = meal['meal_id'],
+                            quantity = meal['quantity'],
+                            sub_total = Meal.objects.get(id = meal['meal_id']).price * meal['quantity']
+                        )
+
+                    return JsonResponse({"status": "success"})
+                else:
+                    return JsonResponse({"status": "failed", "error": "Cannot get Stripe API. Please try again later."})
         except Meal.DoesNotExist:
             return JsonResponse({"status": "failed", "error": "The specified meal doesn't exist."})
 
@@ -230,3 +246,13 @@ def get_access_token(request, method = 'POST'):
     )
 
     return access_token
+
+
+def set_stripe_key():
+    from foodtasker.settings import STRIPE_API_SECRET_KEY
+    stripe.api_key = STRIPE_API_SECRET_KEY
+
+def get_stripe_token(request):
+    request_name = 'stripe_token'
+
+    return request.POST.get(request_name)

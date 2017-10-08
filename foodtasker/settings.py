@@ -143,6 +143,10 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
+# Stripe configuration
+STRIPE_API_SECRET_KEY = 'sk_test_kcuihCoVIxP6pju0Xm7GLMbt'
+
+
 # Facebook configuration
 SOCIAL_AUTH_FACEBOOK_KEY = '1961542097467913'
 SOCIAL_AUTH_FACEBOOK_SECRET = 'bcc8bc3bb88935ce7af65d902e534cdb'
