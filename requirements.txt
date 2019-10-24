@@ -22,6 +22,6 @@ six==1.11.0
 social-auth-app-django==1.2.0
 social-auth-core==1.4.0
 stripe==1.66.0
-urllib3==1.22
+urllib3==1.24.2
 whitenoise==3.3.1
 psycopg2==2.7.3.1
