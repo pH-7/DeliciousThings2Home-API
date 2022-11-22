@@ -12,7 +12,7 @@ gunicorn==19.7.1
 idna==2.6
 oauthlib==2.0.4
 olefile==0.44
-Pillow==4.2.1
+Pillow==9.3.0
 PyJWT==1.5.3
 python3-openid==3.1.0
 pytz==2017.2
